@@ -49,4 +49,4 @@ def get_minc_content():
 
 # ---------------- Page & UI/UX Components ------------------------
 if __name__ == "__main__":
-    st.write(get_minc_content()['q'],'$minc$',get_minc_content()['a'])
+    st.write(get_minc_content()['q'],'.$$minc$$',get_minc_content()['a'])
