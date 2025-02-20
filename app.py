@@ -53,7 +53,7 @@ def get_minc_content():
         q1=mcp[indexarray[4]+1:indexarray[5]]
         q=" ".join([a for a in re.split(r'{"text":"|","type":null}|","type":"definition"}', q1) if a!='' and a !=',']+["("+str(len(ans))+")"])
         driver.quit()
-        return jsonify({'q': q, 'a': ans.lower()})
+        return ({'q': q, 'a': ans.lower()})
     except Exception as e:
         st.write(f"DEBUG:INIT_DRIVER:ERROR:{e}")
     finally:
