@@ -21,11 +21,10 @@ def get_website_content(url):
                                   options=options)
         st.write(f"DEBUG:DRIVER:{driver}")
         driver.get(url)
-        time.sleep(5)
-        html_doc = driver.page_source
+        time.sleep(1)
+        html_doc = driver.title
         driver.quit()
-        soup = BeautifulSoup(html_doc, "html.parser")
-        return soup.get_text()
+        return html_doc
     except Exception as e:
         st.write(f"DEBUG:INIT_DRIVER:ERROR:{e}")
     finally:
