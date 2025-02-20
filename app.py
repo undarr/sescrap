@@ -6,13 +6,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
-from bs4 import BeautifulSoup
+import re
 
 # ------------- Settings for Pages -----------
 st.set_page_config(layout="wide")
 
 # Keep text only
-def get_website_content():
+def get_minc_content():
     driver = None
     try:
         # Using on Local
@@ -36,8 +36,24 @@ def get_website_content():
         puzzle_button.click()
         puzzle_button.send_keys('a')
         local_storage = driver.execute_script("return window.localStorage;")
+        mcp=local_storage['mc-puzzle']
+        indexarray=[]
+        for index, char in enumerate(mcp):
+            if char == '"':
+                indexarray.append(index)
+            if len(indexarray) >= 4:
+                break
+        ans=mcp[indexarray[2]+1:indexarray[3]]
+        for index, char in enumerate(mcp):
+            if char == '[':
+                indexarray.append(index)
+            if char == ']':
+                indexarray.append(index)
+                break
+        q1=mcp[indexarray[4]+1:indexarray[5]]
+        q=" ".join([a for a in re.split(r'{"text":"|","type":null}|","type":"definition"}', q1) if a!='' and a !=',']+["("+str(len(ans))+")"])
         driver.quit()
-        return local_storage
+        return jsonify({'q': q, 'a': ans.lower()})
     except Exception as e:
         st.write(f"DEBUG:INIT_DRIVER:ERROR:{e}")
     finally:
@@ -46,4 +62,4 @@ def get_website_content():
 
 # ---------------- Page & UI/UX Components ------------------------
 if __name__ == "__main__":
-    st.write(get_website_content())
+    st.write(get_minc_content())
