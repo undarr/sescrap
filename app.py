@@ -19,7 +19,6 @@ def get_minc_content():
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
-        options.add_argument('--window-size=1920,1200')
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),
                                   options=options)
         driver.get("https://www.minutecryptic.com")
@@ -36,24 +35,11 @@ def get_minc_content():
         puzzle_button.click()
         puzzle_button.send_keys('a')
         local_storage = driver.execute_script("return window.localStorage;")
-        mcp=local_storage['mc-puzzle']
-        indexarray=[]
-        for index, char in enumerate(mcp):
-            if char == '"':
-                indexarray.append(index)
-            if len(indexarray) >= 4:
-                break
-        ans=mcp[indexarray[2]+1:indexarray[3]]
-        for index, char in enumerate(mcp):
-            if char == '[':
-                indexarray.append(index)
-            if char == ']':
-                indexarray.append(index)
-                break
-        q1=mcp[indexarray[4]+1:indexarray[5]]
-        q=" ".join([a for a in re.split(r'{"text":"|","type":null}|","type":"definition"}', q1) if a!='' and a !=',']+["("+str(len(ans))+")"])
+        mcp=json.loads(local_storage['mc-puzzle'])
         driver.quit()
-        return ({'q': q, 'a': ans.lower()})
+        a=mcp['answer'].lower()
+        q=' '.join([i['text'] for i in mcp['clue']])+' ('+str(len(a))+')'
+        return ({'q':q,'a':a})
     except Exception as e:
         st.write(f"DEBUG:INIT_DRIVER:ERROR:{e}")
     finally:
@@ -62,4 +48,4 @@ def get_minc_content():
 
 # ---------------- Page & UI/UX Components ------------------------
 if __name__ == "__main__":
-    st.write(get_minc_content()['q'],'$$$',get_minc_content()['a'])
+    st.write(get_minc_content()['q'],'$minc$',get_minc_content()['a'])
