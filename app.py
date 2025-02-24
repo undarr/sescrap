@@ -39,8 +39,11 @@ def get_minc_content():
         mcp=json.loads(local_storage['mc-puzzle'])
         driver.quit()
         a=mcp['answer'].lower()
+        print(mcp)
         q=' '.join([i['text'] for i in mcp['clue']])+' ('+str(len(a))+')'
-        return ({'q':q,'a':a})
+        h=mcp['hint']
+        v=mcp['explainerVideo']
+        return ({'q':q,'a':a,'h':h,'v':v})
     except Exception as e:
         st.write(f"DEBUG:INIT_DRIVER:ERROR:{e}")
     finally:
@@ -49,4 +52,5 @@ def get_minc_content():
 
 # ---------------- Page & UI/UX Components ------------------------
 if __name__ == "__main__":
-    st.write(get_minc_content()['q'],'()minc()',get_minc_content()['a'])
+    d=get_minc_content()
+    st.write(d['q'],'()minc()',d['a'],'()minc()',d['h'],'()minc()',d['v'],'()minc()','()big()')
