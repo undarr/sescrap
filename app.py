@@ -39,7 +39,7 @@ def get_minc_content():
         mcp=json.loads(local_storage['mc-puzzle'])
         driver.quit()
         a=mcp['answer'].lower()
-        q=' '.join([i['text'] for i in mcp['clue']])+' ('+','.join([len(j) for j in a.split()])+')'
+        q=' '.join([i['text'] for i in mcp['clue']])+' ('+','.join([str(len(j)) for j in a.split()])+')'
         h=mcp['hint']
         v=mcp['explainerVideo']
         return ({'q':q,'a':a,'h':h,'v':v})
