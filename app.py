@@ -24,7 +24,7 @@ def get_minc_content():
                                   options=options)
         driver.get("https://www.minutecryptic.com")
         button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-sentry-component="SerifVariant"]'))
+            EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.bg-mc-pink'))
         )
         # Click the button
         button.click()
