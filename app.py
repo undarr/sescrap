@@ -13,7 +13,7 @@ import re
 st.set_page_config(layout="wide")
 
 # Keep text only
-def get_minc_content():
+def get_clues():
     driver = None
     try:
         # Using on Local
@@ -37,12 +37,26 @@ def get_minc_content():
         puzzle_button.send_keys('a')
         local_storage = driver.execute_script("return window.localStorage;")
         mcp=json.loads(local_storage['mc-puzzle'])
-        driver.quit()
         a=mcp['answer'].lower()
         q=' '.join([i['text'] for i in mcp['clue']])+' ('+','.join([str(len(j)) for j in a.split()])+')'
-        h=mcp['hint']
+        h1=mcp['hints'][0]['text']
+        h2=mcp['hints'][1]['text']
+        h3=mcp['hints'][2]['text']
+        ht1=mcp['hints'][0]['type']
+        ht2=mcp['hints'][1]['type']
+        ht3=mcp['hints'][2]['type']
         v=mcp['explainerVideo']
-        return ({'q':q,'a':a,'h':h,'v':v})
+        driver.get("https://dailycrypticle.com/dailyclue.html")
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+        dc=['','','','']
+        while '' in dc:
+            dc[0]=driver.execute_script("return targetWord;")
+            dc[1]=driver.execute_script("return clueData;")
+            dc[2]=driver.execute_script("return urlData;")
+            dc[3]=driver.execute_script("return definitionData;")
+        dc[1]+=" ("+str(len(dc[0]))+")"
+        driver.quit()
+        return (' ()minc() '.join([q,a,h1,h2,h3,ht1,ht2,ht3,v])+' ()big() '+' ()dc() '.join(dc))
     except Exception as e:
         st.write(f"DEBUG:INIT_DRIVER:ERROR:{e}")
     finally:
@@ -51,5 +65,5 @@ def get_minc_content():
 
 # ---------------- Page & UI/UX Components ------------------------
 if __name__ == "__main__":
-    d=get_minc_content()
-    st.write(d['q'],'()minc()',d['a'],'()minc()',d['h'],'()minc()',d['v'],'()minc()','()big()')
+    d=get_clues()
+    st.write(d)
