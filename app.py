@@ -46,6 +46,7 @@ def get_clues():
         ht2=mcp['hints'][1]['type']
         ht3=mcp['hints'][2]['type']
         v=mcp['explainerVideo']
+        sn=mcp['setterName']
         driver.get("https://dailycrypticle.com/dailyclue.html")
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         dc=['','','','']
@@ -56,7 +57,7 @@ def get_clues():
             dc[3]=driver.execute_script("return definitionData;")
         dc[1]+=" ("+str(len(dc[0]))+")"
         driver.quit()
-        return (' ()minc() '.join([q,a,h1,h2,h3,ht1,ht2,ht3,v])+' ()big() '+' ()dc() '.join(dc))
+        return (' ()minc() '.join([q,a,h1,h2,h3,ht1,ht2,ht3,v,sn])+' ()big() '+' ()dc() '.join(dc))
     except Exception as e:
         st.write(f"DEBUG:INIT_DRIVER:ERROR:{e}")
     finally:
