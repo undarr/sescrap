@@ -28,25 +28,85 @@ def get_clues():
         )
         # Click the button
         button.click()
-        # Retrieve local storage data
-        puzzle_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-sentry-component="PuzzlePiece"]'))
+        inner_html = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'p[data-sentry-component="PuzzleHighlightableClue"]'))
+        ).get_attribute("innerHTML")
+        sn = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'p.text-\\[12px\\].text-black'))
+        ).get_attribute("innerHTML")[3:]
+        def process_clue(s):
+            clean_s = re.sub(r'<[^>]+>', '', s)
+            nums_str = re.search(r'\(([\d,\s]+)\)$', clean_s).group(1)
+            return [clean_s, sum(int(n.strip()) for n in nums_str.split(',')), nums_str]
+        q,looptime,astr=process_clue(inner_html)
+        hint_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='hints']]"))
         )
-        # Click the second button
-        puzzle_button.click()
-        puzzle_button.send_keys('a')
-        local_storage = driver.execute_script("return window.localStorage;")
-        mcp=json.loads(local_storage['mc-puzzle'])
-        a=mcp['answer'].lower()
-        q=' '.join([i['text'] for i in mcp['clue']])+' ('+','.join([str(len(j)) for j in a.split()])+')'
-        h1=mcp['hints'][0]['text']
-        h2=mcp['hints'][1]['text']
-        h3=mcp['hints'][2]['text']
-        ht1=mcp['hints'][0]['type']
-        ht2=mcp['hints'][1]['type']
-        ht3=mcp['hints'][2]['type']
-        v=mcp['explainerVideo']
-        sn=mcp['setterName']
+        hint_button.click()
+        parent_div = driver.find_element(By.CSS_SELECTOR, 'div.w-full.flex.flex-col.items-start.gap-\\[16px\\]')
+        all_buttons_in_div = parent_div.find_elements(By.TAG_NAME, 'button')
+        ht1=all_buttons_in_div[0].text
+        ht2=all_buttons_in_div[1].text
+        ht3=all_buttons_in_div[2].text
+        hint1_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht1+"']]"))
+        )
+        hint1_button.click()
+        back_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='back']]"))
+        )
+        h1 = driver.find_element(By.CSS_SELECTOR, 'p.text-black.text-\\[18px\\]').get_attribute("innerHTML")
+        back_button.click()
+        hint2_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht2+"']]"))
+        )
+        hint2_button.click()
+        back_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='back']]"))
+        )
+        h2 = driver.find_element(By.CSS_SELECTOR, 'p.text-black.text-\\[18px\\]').get_attribute("innerHTML")
+        back_button.click()
+        hint3_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht3+"']]"))
+        )
+        hint3_button.click()
+        back_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='back']]"))
+        )
+        h3 = driver.find_element(By.CSS_SELECTOR, 'p.text-black.text-\\[18px\\]').get_attribute("innerHTML")
+        back_button.click()
+        for i in range(looptime-1):
+            show_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='show letter']]"))
+            )
+            show_button.click()
+            hint_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='hints']]"))
+            )
+            hint_button.click()
+        show_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='show letter']]"))
+        )
+        show_button.click()
+        apiece = [
+            el.get_attribute("innerHTML")
+            for el in WebDriverWait(driver, 10).until(
+                EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.-translate-y-1'))
+            )
+        ]
+        def getanswer(chars: list, lengths_str: str) -> str:
+            segment_lengths = [int(length) for length in lengths_str.split(',')]
+            result_segments = []
+            current_char_index = 0
+            for length in segment_lengths:
+                segment_chars = chars[current_char_index : current_char_index + length]
+                result_segments.append("".join(segment_chars))
+                current_char_index += length
+            return "-".join(result_segments)
+        a=getanswer(apiece,astr)
+        v = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'a.w-\\[168px\\].relative'))
+        ).get_attribute("href")
         driver.get("https://dailycrypticle.com/dailyclue.html")
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         dc=['','','','']
