@@ -75,19 +75,11 @@ def get_clues():
         )
         h3 = driver.find_element(By.CSS_SELECTOR, 'p.text-black.text-\\[18px\\]').get_attribute("innerHTML")
         back_button.click()
-        for i in range(looptime-1):
+        for i in range(looptime):
             show_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='show letter']]"))
             )
             show_button.click()
-            hint_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='hints']]"))
-            )
-            hint_button.click()
-        show_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='show letter']]"))
-        )
-        show_button.click()
         apiece = [
             el.get_attribute("innerHTML")
             for el in WebDriverWait(driver, 10).until(
