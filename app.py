@@ -45,36 +45,48 @@ def get_clues():
         hint_button.click()
         parent_div = driver.find_element(By.CSS_SELECTOR, 'div.w-full.flex.flex-col.items-start.gap-\\[16px\\]')
         all_buttons_in_div = parent_div.find_elements(By.TAG_NAME, 'button')
-        ht1=all_buttons_in_div[0].text
-        ht2=all_buttons_in_div[1].text
-        ht3=all_buttons_in_div[2].text
-        hint1_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht1+"']]"))
-        )
-        hint1_button.click()
-        back_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='back']]"))
-        )
-        h1 = driver.find_element(By.CSS_SELECTOR, 'p.text-black.text-\\[18px\\]').get_attribute("innerHTML")
-        back_button.click()
-        hint2_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht2+"']]"))
-        )
-        hint2_button.click()
-        back_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='back']]"))
-        )
-        h2 = driver.find_element(By.CSS_SELECTOR, 'p.text-black.text-\\[18px\\]').get_attribute("innerHTML")
-        back_button.click()
-        hint3_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht3+"']]"))
-        )
-        hint3_button.click()
-        back_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='back']]"))
-        )
-        h3 = driver.find_element(By.CSS_SELECTOR, 'p.text-black.text-\\[18px\\]').get_attribute("innerHTML")
-        back_button.click()
+        ht1="No hint"
+        ht2="No hint"
+        ht3="No hint"
+        h1="No hint"
+        h2="No hint"
+        h3="No hint"
+        if (len(all_buttons_in_div)>=2):
+            ht1=all_buttons_in_div[0].text
+        if (len(all_buttons_in_div)>=3):
+            ht2=all_buttons_in_div[1].text
+        if (len(all_buttons_in_div)>=4):
+            ht3=all_buttons_in_div[2].text
+        if (len(all_buttons_in_div)>=2):
+            hint1_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht1+"']]"))
+            )
+            hint1_button.click()
+            back_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='back']]"))
+            )
+            h1 = driver.find_element(By.CSS_SELECTOR, 'p.text-black.text-\\[18px\\]').get_attribute("innerHTML")
+            back_button.click()
+        if (len(all_buttons_in_div)>=3):
+            hint2_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht2+"']]"))
+            )
+            hint2_button.click()
+            back_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='back']]"))
+            )
+            h2 = driver.find_element(By.CSS_SELECTOR, 'p.text-black.text-\\[18px\\]').get_attribute("innerHTML")
+            back_button.click()
+        if (len(all_buttons_in_div)>=4):
+            hint3_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht3+"']]"))
+            )
+            hint3_button.click()
+            back_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='back']]"))
+            )
+            h3 = driver.find_element(By.CSS_SELECTOR, 'p.text-black.text-\\[18px\\]').get_attribute("innerHTML")
+            back_button.click()
         for i in range(looptime):
             show_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='show letter']]"))
