@@ -149,4 +149,4 @@ def get_clues():
 # ---------------- Page & UI/UX Components ------------------------
 if __name__ == "__main__":
     d=get_clues()
-    st.code(d)
+    st.text(d)
