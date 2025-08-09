@@ -43,8 +43,8 @@ def get_clues():
             EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='hints']]"))
         )
         hint_button.click()
-        parent_div = driver.find_element(By.CSS_SELECTOR, 'div.w-full.flex.flex-col.items-start.gap-\\[16px\\]')
-        all_buttons_in_div = parent_div.find_elements(By.TAG_NAME, 'button')
+        all_buttons_in_div = [i for i in driver.find_elements(By.TAG_NAME, "button") if i.text not in ["","hints","check"]]
+        #print(all_buttons_in_div, [i.text for i in all_buttons_in_div])
         ht1="No hint"
         ht2="No hint"
         ht3="No hint"
@@ -62,31 +62,49 @@ def get_clues():
                 EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht1+"']]"))
             )
             hint1_button.click()
-            back_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='back']]"))
-            )
-            h1 = driver.find_element(By.CSS_SELECTOR, 'p.text-black.text-\\[18px\\]').get_attribute("innerHTML")
-            back_button.click()
+            paragraph_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((
+                By.CSS_SELECTOR,
+                "p[data-sentry-component='PuzzleHintContent']"
+            )))
+            h1=paragraph_element.text
+            clickable_element_selector = "div.text-\\[32px\\].cursor-pointer.active\\:opacity-60.transition-opacity.duration-200"
+            clickable_element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((
+                By.CSS_SELECTOR,
+                clickable_element_selector
+            )))
+            clickable_element.click()
         if (len(all_buttons_in_div)>=3):
             hint2_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht2+"']]"))
             )
             hint2_button.click()
-            back_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='back']]"))
-            )
-            h2 = driver.find_element(By.CSS_SELECTOR, 'p.text-black.text-\\[18px\\]').get_attribute("innerHTML")
-            back_button.click()
+            paragraph_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((
+                By.CSS_SELECTOR,
+                "p[data-sentry-component='PuzzleHintContent']"
+            )))
+            h2=paragraph_element.text
+            clickable_element_selector = "div.text-\\[32px\\].cursor-pointer.active\\:opacity-60.transition-opacity.duration-200"
+            clickable_element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((
+                By.CSS_SELECTOR,
+                clickable_element_selector
+            )))
+            clickable_element.click()
         if (len(all_buttons_in_div)>=4):
             hint3_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht3+"']]"))
             )
             hint3_button.click()
-            back_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='back']]"))
-            )
-            h3 = driver.find_element(By.CSS_SELECTOR, 'p.text-black.text-\\[18px\\]').get_attribute("innerHTML")
-            back_button.click()
+            paragraph_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((
+                By.CSS_SELECTOR,
+                "p[data-sentry-component='PuzzleHintContent']"
+            )))
+            h3=paragraph_element.text
+            clickable_element_selector = "div.text-\\[32px\\].cursor-pointer.active\\:opacity-60.transition-opacity.duration-200"
+            clickable_element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((
+                By.CSS_SELECTOR,
+                clickable_element_selector
+            )))
+            clickable_element.click()
         for i in range(looptime):
             show_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='show letter']]"))
@@ -95,7 +113,7 @@ def get_clues():
         apiece = [
             el.get_attribute("innerHTML")
             for el in WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.-translate-y-1'))
+                EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'span.-translate-y-1'))
             )
         ]
         def getanswer(chars: list, lengths_str: str) -> str:
@@ -131,4 +149,4 @@ def get_clues():
 # ---------------- Page & UI/UX Components ------------------------
 if __name__ == "__main__":
     d=get_clues()
-    st.write(d)
+    st.code(d)
