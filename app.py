@@ -26,21 +26,22 @@ def get_clues():
         button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.bg-mc-pink'))
         )
-        # Click the button
         button.click()
-        inner_html = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, 'p[data-sentry-component="PuzzleHighlightableClue"]'))
-        ).get_attribute("innerHTML")
+        css_selector = "div[data-testid='visible-content']"
+
         sn = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, 'p.text-\\[12px\\].text-black'))
-        ).get_attribute("innerHTML")[3:]
+        ).get_attribute("innerHTML")[3:].replace("&amp;","&")
+        wait = WebDriverWait(driver, 10) # Wait up to 10 seconds
+        visible_content_div = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, css_selector)))
+        clue_text = visible_content_div.text
         def process_clue(s):
             clean_s = re.sub(r'<[^>]+>', '', s)
             nums_str = re.search(r'\(([\d,\s]+)\)$', clean_s).group(1)
             return [clean_s, sum(int(n.strip()) for n in nums_str.split(',')), nums_str]
-        q,looptime,astr=process_clue(inner_html)
+        q,looptime,astr=process_clue(visible_content_div.text)
         hint_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='hints']]"))
+            EC.element_to_be_clickable((By.XPATH, "//button[@data-sentry-component='ShadowButton']"))
         )
         hint_button.click()
         all_buttons_in_div = [i for i in driver.find_elements(By.TAG_NAME, "button") if i.text not in ["","hints","check"]]
@@ -126,9 +127,11 @@ def get_clues():
                 current_char_index += length
             return "-".join(result_segments)
         a=getanswer(apiece,astr)
-        v = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, 'a.w-\\[168px\\].relative'))
-        ).get_attribute("href")
+        img_alt_selector = "img[alt='Daily explainer video thumbnail']"
+        xpath_to_parent_link = "./ancestor::a"
+        image_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, img_alt_selector)))
+        link_element = image_element.find_element(By.XPATH, xpath_to_parent_link)
+        v = link_element.get_attribute('href')
         driver.get("https://dailycrypticle.com/dailyclue.html")
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         dc=['','','','']
