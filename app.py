@@ -9,14 +9,12 @@ import time
 import json
 import re
 
-# ------------- Settings for Pages -----------
 st.set_page_config(layout="wide")
 
 # Keep text only
 def get_clues():
     driver = None
     try:
-        # Using on Local
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
@@ -34,7 +32,6 @@ def get_clues():
         ).get_attribute("innerHTML")[3:].replace("&amp;","&")
         wait = WebDriverWait(driver, 10) # Wait up to 10 seconds
         visible_content_div = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, css_selector)))
-        clue_text = visible_content_div.text
         def process_clue(s):
             clean_s = re.sub(r'<[^>]+>', '', s)
             nums_str = re.search(r'\(([\d,\s]+)\)$', clean_s).group(1)
@@ -43,7 +40,7 @@ def get_clues():
         hint_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//button[@data-sentry-component='ShadowButton']"))
         )
-        hint_button.click()
+        driver.execute_script("arguments[0].click();", hint_button)
         all_buttons_in_div = [i for i in driver.find_elements(By.TAG_NAME, "button") if i.text not in ["","hints","check"]]
         #print(all_buttons_in_div, [i.text for i in all_buttons_in_div])
         ht1="No hint"
@@ -62,7 +59,7 @@ def get_clues():
             hint1_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht1+"']]"))
             )
-            hint1_button.click()
+            driver.execute_script("arguments[0].click();", hint1_button)
             paragraph_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((
                 By.CSS_SELECTOR,
                 "p[data-sentry-component='PuzzleHintContent']"
@@ -73,12 +70,12 @@ def get_clues():
                 By.CSS_SELECTOR,
                 clickable_element_selector
             )))
-            clickable_element.click()
+            driver.execute_script("arguments[0].click();", clickable_element)
         if (len(all_buttons_in_div)>=3):
             hint2_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht2+"']]"))
             )
-            hint2_button.click()
+            driver.execute_script("arguments[0].click();", hint2_button)
             paragraph_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((
                 By.CSS_SELECTOR,
                 "p[data-sentry-component='PuzzleHintContent']"
@@ -89,12 +86,12 @@ def get_clues():
                 By.CSS_SELECTOR,
                 clickable_element_selector
             )))
-            clickable_element.click()
+            driver.execute_script("arguments[0].click();", clickable_element)
         if (len(all_buttons_in_div)>=4):
             hint3_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht3+"']]"))
             )
-            hint3_button.click()
+            driver.execute_script("arguments[0].click();", hint3_button)
             paragraph_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((
                 By.CSS_SELECTOR,
                 "p[data-sentry-component='PuzzleHintContent']"
@@ -105,12 +102,12 @@ def get_clues():
                 By.CSS_SELECTOR,
                 clickable_element_selector
             )))
-            clickable_element.click()
+            driver.execute_script("arguments[0].click();", clickable_element)
         for i in range(looptime):
             show_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='show letter']]"))
             )
-            show_button.click()
+            driver.execute_script("arguments[0].click();", show_button)
         apiece = [
             el.get_attribute("innerHTML")
             for el in WebDriverWait(driver, 10).until(
