@@ -24,7 +24,7 @@ def get_clues():
         button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.bg-mc-pink'))
         )
-        button.click()
+        driver.execute_script("arguments[0].click();", button)
         css_selector = "div[data-testid='visible-content']"
 
         sn = WebDriverWait(driver, 10).until(
