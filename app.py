@@ -21,6 +21,7 @@ def get_clues():
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage") # Overcomes limited resource problems
         options.add_argument("--remote-debugging-port=9222")
+        options.binary_location = "/usr/bin/google-chrome"
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),
                                   options=options)
         driver.get("https://www.minutecryptic.com")
