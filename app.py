@@ -17,11 +17,20 @@ def get_clues():
     driver = None
     try:
         options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
-        options.add_argument('--disable-gpu')
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage") # Overcomes limited resource problems
+
+        options.add_argument("--headless=new") # Use the modern headless engine
+        options.add_argument("--no-sandbox") # Required for Linux/Docker environments
+        options.add_argument("--disable-dev-shm-usage") # Fixes 'renderer' and memory crashes, Overcomes limited resource problems
+        options.add_argument("--disable-gpu") # Saves memory
         options.add_argument("--remote-debugging-port=9222")
+        options.add_argument("--window-size=1920,1080") # Prevents some 'element not found' errors
+        
+        # Helps prevent the browser from being detected/closed by the host
+        options.add_argument("--disable-extensions")
+        options.add_argument("--proxy-server='direct://'")
+        options.add_argument("--proxy-bypass-list=*")
+        options.add_argument("--start-maximized")
+    
         options.binary_location = "/usr/bin/chromium"
         driver = webdriver.Chrome(service=Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()),
                                   options=options)
