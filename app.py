@@ -79,7 +79,7 @@ def get_clues():
                 "p[data-sentry-component='PuzzleHintContent']"
             )))
             h1=paragraph_element.text
-            clickable_element_selector = "div.text-\\[32px\\].cursor-pointer.active\\:opacity-60.transition-opacity.duration-200"
+            clickable_element_selector = "button[aria-label='Back']"
             clickable_element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((
                 By.CSS_SELECTOR,
                 clickable_element_selector
@@ -95,7 +95,7 @@ def get_clues():
                 "p[data-sentry-component='PuzzleHintContent']"
             )))
             h2=paragraph_element.text
-            clickable_element_selector = "div.text-\\[32px\\].cursor-pointer.active\\:opacity-60.transition-opacity.duration-200"
+            clickable_element_selector = "button[aria-label='Back']"
             clickable_element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((
                 By.CSS_SELECTOR,
                 clickable_element_selector
@@ -111,7 +111,7 @@ def get_clues():
                 "p[data-sentry-component='PuzzleHintContent']"
             )))
             h3=paragraph_element.text
-            clickable_element_selector = "div.text-\\[32px\\].cursor-pointer.active\\:opacity-60.transition-opacity.duration-200"
+            clickable_element_selector = "button[aria-label='Back']"
             clickable_element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((
                 By.CSS_SELECTOR,
                 clickable_element_selector
