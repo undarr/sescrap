@@ -35,6 +35,14 @@ def get_clues():
         driver = webdriver.Chrome(service=Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()),
                                   options=options)
         driver.get("https://www.minutecryptic.com")
+        button_xpath = "//button[.//p[contains(text(), 'not now')]]"
+        try:
+            button = WebDriverWait(driver, 5).until(
+                EC.element_to_be_clickable((By.XPATH, button_xpath))
+            )
+            button.click()
+        except (NoSuchElementException, TimeoutException):
+            pass
         button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.bg-mc-pink'))
         )
