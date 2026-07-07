@@ -1,43 +1,27 @@
+import requests
 import streamlit as st
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from webdriver_manager.core.os_manager import ChromeType
-import time
-import json
+from webdriver_manager.firefox import GeckoDriverManager
 import re
-import shutil
-
-st.set_page_config(layout="wide")
 
 def get_driver():
     options = Options()
-    options.add_argument("--headless=new")  # Critical for cloud
-    options.add_argument("--no-sandbox")     # Critical for Linux/Docker
-    options.add_argument("--disable-dev-shm-usage") # Overcomes limited resource problems
-    options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=1920,1080")
-
-    # 1. Check for Chromium (Common on Streamlit Cloud/Linux)
-    chromium_path = shutil.which("chromium") or shutil.which("chromium-browser")
-    options.binary_location = chromium_path
-    service = Service("/usr/bin/chromedriver")
-    return webdriver.Chrome(service=service, options=options)
+    options.add_argument("--headless")  # Standard headless mode
+    
+    # Firefox is much more stable in containers and 
+    # usually doesn't need the 'no-sandbox' or 'no-zygote' hacks.
+    
+    service = Service(GeckoDriverManager().install())
+    return webdriver.Firefox(service=service, options=options)
 
 # Keep text only
 def get_clues():
-    try:
-        driver = get_driver()
-        driver.get("https://www.minutecryptic.com")
-        st.write("Title:", driver.title)
-        driver.quit()
-    except Exception as e:
-        st.error(f"Driver Error: {e}")
     try:
         driver = get_driver()
         driver.get("https://www.minutecryptic.com")
@@ -52,9 +36,8 @@ def get_clues():
         button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.bg-mc-pink'))
         )
-        driver.execute_script("arguments[0].click();", button)
+        button.click()
         css_selector = "div[data-testid='visible-content']"
-
         sn = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, 'p.text-\\[12px\\].text-black'))
         ).get_attribute("innerHTML")[3:].replace("&amp;","&")
@@ -157,19 +140,16 @@ def get_clues():
         image_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, img_alt_selector)))
         link_element = image_element.find_element(By.XPATH, xpath_to_parent_link)
         v = link_element.get_attribute('href')
-        driver.get("https://dailycrypticle.com")
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        dc=['','','','']
-        while '' in dc:
-            dc[0]=driver.execute_script("return targetWord;")
-            dc[1]=driver.execute_script("return clueData;")
-            dc[2]=driver.execute_script("return urlData;")
-            dc[3]=driver.execute_script("return definitionData;")
+        #driver.get("https://dailycrypticle.com")
+        response = requests.get("https://dailycrypticle.com/patent-stats")
+        data = response.json()
+        dc = [data[1], data[0], data[2], data[3]]
         dc[1]+=" ("+str(len(dc[0]))+")"
         driver.quit()
         return (' ()minc() '.join([q,a,h1,h2,h3,ht1,ht2,ht3,v,sn])+' ()big() '+' ()dc() '.join(dc))
     except Exception as e:
         st.write(f"DEBUG:INIT_DRIVER:ERROR:{e}")
+        st.text(' ()minc() '.join([q,a,h1,h2,h3,ht1,ht2,ht3,v,sn])+' ()big() '+' ()dc() '.join(dc))
     finally:
         if driver is not None: driver.quit()
     return None
