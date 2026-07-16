@@ -170,7 +170,7 @@ def get_clues():
             "messages": [
                 {
                   "role": "user",
-                  "content": "Solve this problem: "+q
+                  "content": "Solve this problem: "+dlq
                 }
               ],
             "reasoning": {"enabled": True}
