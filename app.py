@@ -18,7 +18,7 @@ def get_driver():
     # Firefox is much more stable in containers and 
     # usually doesn't need the 'no-sandbox' or 'no-zygote' hacks.
     
-    service = Service(GeckoDriverManager().install())
+    service = Service(GeckoDriverManager(version="v0.34.0").install())
     return webdriver.Firefox(service=service, options=options)
 
 # Keep text only
