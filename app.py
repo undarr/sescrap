@@ -158,7 +158,27 @@ def get_clues():
         response = requests.post(url, json=payload)
         data = response.json()
         dlq=data['puzzle']['latex']
-        dl=[dlq]
+        response = requests.post(
+          url="https://openrouter.ai/api/v1/chat/completions",
+          headers={
+            "Authorization": "Bearer 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",
+            "Content-Type": "application/json",
+          },
+          data=json.dumps({
+            "model": "google/gemma-4-26b-a4b-it:free",
+            "messages": [
+                {
+                  "role": "user",
+                  "content": "Solve this problem: "+q
+                }
+              ],
+            "reasoning": {"enabled": True}
+          })
+        )
+        
+        response = response.json()
+        dlr = response['choices'][0]['message']['content']
+        dl=[dlq,dlr]
         driver.quit()
         return (' ()minc() '.join([q,a,h1,h2,h3,ht1,ht2,ht3,v,sn])+' ()big() '+' ()dc() '.join(dc)+' ()big() '+' ()dl() '.join(dl))
     except Exception as e:
