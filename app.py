@@ -145,8 +145,22 @@ def get_clues():
         data = response.json()
         dc = [data[1], data[0], data[2], data[3]]
         dc[1]+=" ("+str(len(dc[0]))+")"
+        #dailylogic
+        urlday = 'https://btulehndzikuesmrzmhd.supabase.co/functions/v1/get-server-day'
+        payload={}
+        response = requests.post(urlday, json=payload)
+        data = response.json()['day']
+        url = "https://btulehndzikuesmrzmhd.supabase.co/functions/v1/get-daily-puzzle"
+        payload = {
+            "type": "logic",
+            "day": response.json()['day']
+        }
+        response = requests.post(url, json=payload)
+        data = response.json()
+        dlq=data['puzzle']['latex']
+        dl=[dlq]
         driver.quit()
-        return (' ()minc() '.join([q,a,h1,h2,h3,ht1,ht2,ht3,v,sn])+' ()big() '+' ()dc() '.join(dc))
+        return (' ()minc() '.join([q,a,h1,h2,h3,ht1,ht2,ht3,v,sn])+' ()big() '+' ()dc() '.join(dc)+' ()big() '+' ()dl() '.join(dl))
     except Exception as e:
         st.write(f"DEBUG:INIT_DRIVER:ERROR:{e}")
         st.text(' ()minc() '.join([q,a,h1,h2,h3,ht1,ht2,ht3,v,sn])+' ()big() '+' ()dc() '.join(dc))
