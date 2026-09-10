@@ -1,4 +1,4 @@
+streamlit
+streamlit-option-menu
 selenium==4.21.0
-streamlit==1.35.0
-streamlit-option-menu==0.3.13
 webdriver-manager==4.0.2
