@@ -185,7 +185,7 @@ def get_clues():
             By.CSS_SELECTOR, "div.rounded-\\[var\\(--radius-md\\)\\] button"
         )
         word = "".join([btn.text.strip() for btn in letter_buttons if btn.text.strip()])
-        dc2 = [word, dq, "https://dailycryptic.co/play/daily", dh1.text, dh2.text, dh3.text]
+        dc2 = [lower(word), dq, "https://dailycryptic.co/play/daily", dh1.text, dh2.text, dh3.text]
         
         #dailylogic
         urlday = 'https://btulehndzikuesmrzmhd.supabase.co/functions/v1/get-server-day'
