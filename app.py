@@ -146,6 +146,47 @@ def get_clues():
         data = response.json()
         dc = [data[1], data[0], data[2], data[3]]
         dc[1]+=" ("+str(len(dc[0]))+")"
+        #new dcrypt
+        driver.get("https://dailycryptic.co/play/daily")
+        element = wait.until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, "p.font-serif.text-balance.text-ink")
+            )
+        )
+        dq,dlooptime,dastr=process_clue(element.text)
+        button_locator = (By.CSS_SELECTOR, "button[aria-label='Reveal hint']")
+        button_locator2 = (By.CSS_SELECTOR, "button[aria-label='Reveal a letter']")
+        while True:
+            button = wait.until(EC.presence_of_element_located(button_locator))
+            if not button.is_enabled() or button.get_attribute("disabled") is not None:
+                break
+            button.click()
+        dh1 = wait.until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, "div[style*='var(--hint-1)']")
+            )
+        )
+        dh2 = wait.until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, "div[style*='var(--hint-2)']")
+            )
+        )
+        dh3 = wait.until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, "div[style*='var(--hint-3)']")
+            )
+        )
+        for i in range(dlooptime):
+            button = wait.until(EC.presence_of_element_located(button_locator2))
+            if not button.is_enabled() or button.get_attribute("disabled") is not None:
+                break
+            button.click()
+        letter_buttons = driver.find_elements(
+            By.CSS_SELECTOR, "div.rounded-\\[var\\(--radius-md\\)\\] button"
+        )
+        word = "".join([btn.text.strip() for btn in letter_buttons if btn.text.strip()])
+        dc2 = [word, dq, "https://dailycryptic.co/play/daily", dh1, dh2, dh3]
+        
         #dailylogic
         urlday = 'https://btulehndzikuesmrzmhd.supabase.co/functions/v1/get-server-day'
         payload={}
@@ -161,10 +202,10 @@ def get_clues():
         dlq=data['puzzle']['latex'].replace("\n","(dlnewline)")
         dl=[dlq]
         driver.quit()
-        return (' ()minc() '.join([q,a,h1,h2,h3,ht1,ht2,ht3,v,sn])+' ()big() '+' ()dc() '.join(dc)+' ()big() '+' ()dl() '.join(dl))
+        return (' ()minc() '.join([q,a,h1,h2,h3,ht1,ht2,ht3,v,sn])+' ()big() '+' ()dc() '.join(dc2)+' ()big() '+' ()dl() '.join(dl))
     except Exception as e:
         st.write(f"DEBUG:INIT_DRIVER:ERROR:{e}")
-        st.text(' ()minc() '.join([q,a,h1,h2,h3,ht1,ht2,ht3,v,sn])+' ()big() '+' ()dc() '.join(dc))
+        st.text(' ()minc() '.join([q,a,h1,h2,h3,ht1,ht2,ht3,v,sn])+' ()big() '+' ()dc() '.join(dc2))
     finally:
         if driver is not None: driver.quit()
     return None
