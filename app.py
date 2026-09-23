@@ -156,26 +156,41 @@ def get_clues():
         dq,dlooptime,dastr=process_clue(element.text)
         button_locator = (By.CSS_SELECTOR, "button[aria-label='Reveal hint']")
         button_locator2 = (By.CSS_SELECTOR, "button[aria-label='Reveal a letter']")
+        c=0
         while True:
             button = wait.until(EC.presence_of_element_located(button_locator))
             if not button.is_enabled() or button.get_attribute("disabled") is not None:
                 break
             button.click()
-        dh1 = wait.until(
-            EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, "div[style*='var(--hint-1)']")
-            )
-        )
-        dh2 = wait.until(
-            EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, "div[style*='var(--hint-2)']")
-            )
-        )
-        dh3 = wait.until(
-            EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, "div[style*='var(--hint-3)']")
-            )
-        )
+            c+=1
+        dh1="no hint"
+        dh2="no hint"
+        dh3="no hint"
+        dh4="no hint"
+        if (c>=1):
+            dh1 = wait.until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, "div[style*='var(--hint-1)']")
+                )
+            ).text
+        if (c>=2):
+            dh2 = wait.until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, "div[style*='var(--hint-2)']")
+                )
+            ).text
+        if (c>=3):
+            dh3 = wait.until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, "div[style*='var(--hint-3)']")
+                )
+            ).text
+        if (c>=4):
+            dh4 = wait.until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, "div[style*='var(--hint-3)']")
+                )
+            ).text
         for i in range(dlooptime):
             button = wait.until(EC.presence_of_element_located(button_locator2))
             if not button.is_enabled() or button.get_attribute("disabled") is not None:
@@ -184,8 +199,8 @@ def get_clues():
         letter_buttons = driver.find_elements(
             By.CSS_SELECTOR, "div.rounded-\\[var\\(--radius-md\\)\\] button"
         )
-        word = "".join([btn.text.strip() for btn in letter_buttons if btn.text.strip()])
-        dc2 = [word.lower(), dq, "https://dailycryptic.co/play/daily", dh1.text, dh2.text, dh3.text]
+        word = "".join([btn.text.strip().lower() for btn in letter_buttons if btn.text.strip()])
+        dc2 = [word, dq, "https://dailycryptic.co/play/daily", dh1, dh2, dh3, dh4]
         
         #dailylogic
         urlday = 'https://btulehndzikuesmrzmhd.supabase.co/functions/v1/get-server-day'
