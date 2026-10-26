@@ -11,6 +11,11 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from webdriver_manager.firefox import GeckoDriverManager
 import re
 
+def process_clue(s):
+    clean_s = re.sub(r'<[^>]+>', '', s)
+    nums_str = re.search(r'$', clean_s).group(1)
+    return [clean_s, sum(int(n.strip()) for n in nums_str.split(',')), nums_str]
+
 def get_driver():
     options = Options()
     options.add_argument("--headless")  # Standard headless mode
