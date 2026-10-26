@@ -93,7 +93,7 @@ def get_clues():
         q = f"{clue_words} ({config_str})" if config_str else clue_words
 
         # a: Answer
-        a = puzzle_data.get("answer", "")
+        a = puzzle_data.get("answer", "").lower()
 
         # Hints: h1..h3 (text) and ht1..ht3 (types/titles)
         raw_hints = puzzle_data.get("hints", [])
