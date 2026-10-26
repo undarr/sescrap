@@ -26,121 +26,89 @@ def get_clues():
     try:
         driver = get_driver()
         driver.get("https://www.minutecryptic.com")
-        button_xpath = "//button[.//p[contains(text(), 'not now')]]"
+        driver.get("https://www.minutecryptic.com")
+
+        # 1. Dismiss "not now" popup if it appears
         try:
-            button = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((By.XPATH, button_xpath))
+            not_now = WebDriverWait(driver, 3).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[.//p[contains(text(), 'not now')]]"))
             )
-            button.click()
+            not_now.click()
         except (NoSuchElementException, TimeoutException):
             pass
-        button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.bg-mc-pink'))
+
+        # 2. Click "Play" pink button
+        play_btn = wait.until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "button.bg-mc-pink"))
         )
-        button.click()
-        css_selector = "div[data-testid='visible-content']"
-        sn = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, 'p.text-\\[12px\\].text-black'))
-        ).get_attribute("innerHTML")[3:].replace("&amp;","&")
-        wait = WebDriverWait(driver, 10) # Wait up to 10 seconds
-        visible_content_div = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, css_selector)))
-        def process_clue(s):
-            clean_s = re.sub(r'<[^>]+>', '', s)
-            nums_str = re.search(r'\(([\d,\s]+)\)$', clean_s).group(1)
-            return [clean_s, sum(int(n.strip()) for n in nums_str.split(',')), nums_str]
-        q,looptime,astr=process_clue(visible_content_div.text)
-        hint_button = WebDriverWait(driver, 10).until(
+        play_btn.click()
+
+        # 3. Click the main "Hints" entry button
+        hint_button = wait.until(
             EC.element_to_be_clickable((By.XPATH, "//button[@data-sentry-component='ShadowButton']"))
         )
         driver.execute_script("arguments[0].click();", hint_button)
-        all_buttons_in_div = [i for i in driver.find_elements(By.TAG_NAME, "button") if i.text not in ["","hints","check"]]
-        #print(all_buttons_in_div, [i.text for i in all_buttons_in_div])
-        ht1="No hint"
-        ht2="No hint"
-        ht3="No hint"
-        h1="No hint"
-        h2="No hint"
-        h3="No hint"
-        if (len(all_buttons_in_div)>=2):
-            ht1=all_buttons_in_div[0].text
-        if (len(all_buttons_in_div)>=3):
-            ht2=all_buttons_in_div[1].text
-        if (len(all_buttons_in_div)>=4):
-            ht3=all_buttons_in_div[2].text
-        if (len(all_buttons_in_div)>=2):
-            hint1_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht1+"']]"))
-            )
-            driver.execute_script("arguments[0].click();", hint1_button)
-            paragraph_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((
-                By.CSS_SELECTOR,
-                "p[data-sentry-component='PuzzleHintContent']"
-            )))
-            h1=paragraph_element.text
-            clickable_element_selector = "button[aria-label='Back']"
-            clickable_element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((
-                By.CSS_SELECTOR,
-                clickable_element_selector
-            )))
-            driver.execute_script("arguments[0].click();", clickable_element)
-        if (len(all_buttons_in_div)>=3):
-            hint2_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht2+"']]"))
-            )
-            driver.execute_script("arguments[0].click();", hint2_button)
-            paragraph_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((
-                By.CSS_SELECTOR,
-                "p[data-sentry-component='PuzzleHintContent']"
-            )))
-            h2=paragraph_element.text
-            clickable_element_selector = "button[aria-label='Back']"
-            clickable_element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((
-                By.CSS_SELECTOR,
-                clickable_element_selector
-            )))
-            driver.execute_script("arguments[0].click();", clickable_element)
-        if (len(all_buttons_in_div)>=4):
-            hint3_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='"+ht3+"']]"))
-            )
-            driver.execute_script("arguments[0].click();", hint3_button)
-            paragraph_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((
-                By.CSS_SELECTOR,
-                "p[data-sentry-component='PuzzleHintContent']"
-            )))
-            h3=paragraph_element.text
-            clickable_element_selector = "button[aria-label='Back']"
-            clickable_element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((
-                By.CSS_SELECTOR,
-                clickable_element_selector
-            )))
-            driver.execute_script("arguments[0].click();", clickable_element)
-        for i in range(looptime):
-            show_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[.//p[text()='show letter']]"))
-            )
-            driver.execute_script("arguments[0].click();", show_button)
-        apiece = [
-            el.get_attribute("innerHTML")
-            for el in WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'span.-translate-y-1'))
-            )
-        ]
-        def getanswer(chars: list, lengths_str: str) -> str:
-            segment_lengths = [int(length) for length in lengths_str.split(',')]
-            result_segments = []
-            current_char_index = 0
-            for length in segment_lengths:
-                segment_chars = chars[current_char_index : current_char_index + length]
-                result_segments.append("".join(segment_chars))
-                current_char_index += length
-            return "-".join(result_segments)
-        a=getanswer(apiece,astr)
-        img_alt_selector = "img[alt='Daily explainer video thumbnail']"
-        xpath_to_parent_link = "./ancestor::a"
-        image_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, img_alt_selector)))
-        link_element = image_element.find_element(By.XPATH, xpath_to_parent_link)
-        v = link_element.get_attribute('href')
+
+        # 4. Find the first hint category button
+        all_buttons = wait.until(
+            lambda d: [
+                btn for btn in d.find_elements(By.TAG_NAME, "button")
+                if btn.text.strip().lower() not in ["", "hints", "check", "back"]
+            ]
+        )
+        if not all_buttons:
+            raise RuntimeError("No hint categories found.")
+
+        first_hint_title = all_buttons[0].text.strip()
+
+        # 5. Click the first hint button to populate localStorage
+        h_btn = wait.until(
+            EC.element_to_be_clickable((By.XPATH, f"//button[.//p[text()='{first_hint_title}']]"))
+        )
+        driver.execute_script("arguments[0].click();", h_btn)
+
+        # 6. Retrieve data from localStorage
+        puzzle_raw = None
+        for _ in range(25):
+            puzzle_raw = driver.execute_script("return window.localStorage.getItem('mc-puzzle');")
+            if puzzle_raw:
+                break
+            time.sleep(0.2)
+
+        if not puzzle_raw:
+            raise RuntimeError("localStorage.getItem('mc-puzzle') is empty.")
+
+        puzzle_data = json.loads(puzzle_raw)
+
+        # --- Variable Mapping ---
+        # q: Full clue text + length annotation
+        clue_words = " ".join([c["text"] for c in puzzle_data.get("clue", []) if "text" in c])
+        config_lengths = puzzle_data.get("config", [])
+        config_str = ",".join(str(n) for n in config_lengths)
+        q = f"{clue_words} ({config_str})" if config_str else clue_words
+
+        # a: Answer
+        a = puzzle_data.get("answer", "")
+
+        # Hints: h1..h3 (text) and ht1..ht3 (types/titles)
+        raw_hints = puzzle_data.get("hints", [])
+        h1 = raw_hints[0].get("text", "No hint") if len(raw_hints) > 0 else "No hint"
+        ht1 = raw_hints[0].get("type", "No hint") if len(raw_hints) > 0 else "No hint"
+
+        h2 = raw_hints[1].get("text", "No hint") if len(raw_hints) > 1 else "No hint"
+        ht2 = raw_hints[1].get("type", "No hint") if len(raw_hints) > 1 else "No hint"
+
+        h3 = raw_hints[2].get("text", "No hint") if len(raw_hints) > 2 else "No hint"
+        ht3 = raw_hints[2].get("type", "No hint") if len(raw_hints) > 2 else "No hint"
+
+        # v: Explainer video link
+        v = puzzle_data.get("explainerVideo", "")
+
+        # sn: Setter name
+        sn = puzzle_data.get("setterName", "")
+
+        # --- Output formatting ---
+        minute_cryptic_output_list = [q, a, h1, h2, h3, ht1, ht2, ht3, v, sn]
         #driver.get("https://dailycrypticle.com")
         response = requests.get("https://dailycrypticle.com/patent-stats")
         data = response.json()
@@ -217,10 +185,10 @@ def get_clues():
         dlq=data['puzzle']['latex'].replace("\n","(dlnewline)")
         dl=[dlq]
         driver.quit()
-        return (' ()minc() '.join([q,a,h1,h2,h3,ht1,ht2,ht3,v,sn])+' ()big() '+' ()dc() '.join(dc2)+' ()big() '+' ()dl() '.join(dl))
+        return (' ()minc() '.join(minute_cryptic_output_list)+' ()big() '+' ()dc() '.join(dc2)+' ()big() '+' ()dl() '.join(dl))
     except Exception as e:
         st.write(f"DEBUG:INIT_DRIVER:ERROR:{e}")
-        st.text(' ()minc() '.join([q,a,h1,h2,h3,ht1,ht2,ht3,v,sn])+' ()big() '+' ()dc() '.join(dc2))
+        st.text(' ()minc() '.join(minute_cryptic_output_list)+' ()big() '+' ()dc() '.join(dc2))
     finally:
         if driver is not None: driver.quit()
     return None
