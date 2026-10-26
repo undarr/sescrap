@@ -26,7 +26,7 @@ def get_clues():
     try:
         driver = get_driver()
         driver.get("https://www.minutecryptic.com")
-        driver.get("https://www.minutecryptic.com")
+        wait = WebDriverWait(driver, 10)
 
         # 1. Dismiss "not now" popup if it appears
         try:
